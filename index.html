@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar Status</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <style>
+      /* Style Requirements */
+      .calendar {
+        width: 100%;
+        margin: 0 auto;
+      }
+      .calendar th,
+      .calendar td {
+        text-align: center;
+        padding: 10px;
+      }
+      .calendar td {
+        cursor: pointer;
+      }
+      .busy {
+        background-color: #ee9b9b !important;
+      }
+      .available {
+        background-color: #b1ebb1 !important;
+      }
+      .out-of-office {
+        background-color: #adadfc !important;
+      }
+      .partly-available {
+        background-color: #f5f5b4 !important;
+      }
+      .month-name {
+        text-align: center;
+        font-weight: bold;
+        /* background-color: #f8f9fa; */
+      }
+    </style>
+    <style>
+      /* Fancy Fixings */
+      body {
+        /* background-color: #272727; */
+        padding-bottom: 106px;
+      }
+
+      div.dark-mode-toggle {
+        position: fixed;
+        bottom: 1%;
+        right: 1%;
+        cursor: pointer;
+        font-size: larger;
+        z-index: 1;
+      }
+
+      h1 {
+        font-size: 120px;
+        font-family: "Gambetta", serif;
+        letter-spacing: -3px;
+        transition: 1000ms ease;
+        font-synthesis: none;
+        font-weight: 300;
+        font-style: oblique 1deg;
+      }
+
+      h1:hover {
+        font-weight: 500;
+        /* font-style: oblique 14deg; */
+        letter-spacing: 3px;
+      }
+
+      .footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        line-height: 45px;
+        padding: 0.5em;
+        /* background-color: #f5f5f5; */
+      }
+
+      /* .dark h1 {
+        color: #ece2d0
+      }
+
+      .dark label {
+        color: #ece2d0
+      }
+
+      .dark .form-control {
+        color: #ece2d0;
+        background-color: #414141;
+        border: #363636;
+      }
+
+      .dark .btn-primary {
+        color: #414141;
+        background-color: #cee1f0;
+        border-color: #a0c5e0;
+      } */
+    </style>
+  </head>
+  <body class="dark">
+    <h1 class="text-center my-4">AVAILABILITY PLANNER</h1>
+
+    <div class="dark-mode-toggle">
+      <i id="darkModeIcon" class="bi bi-moon"></i>
+    </div>
+
+    <div class="container my-3">
+      <div class="form-group row mb-3">
+        <label for="startDate" class="col-sm-2 col-form-label"
+          >Start Date:</label
+        >
+        <div class="col-sm-10">
+          <input type="date" id="startDate" class="form-control" />
+        </div>
+      </div>
+      <div class="form-group row mb-3">
+        <label for="numDays" class="col-sm-2 col-form-label"
+          >Number of Days:</label
+        >
+        <div class="col-sm-10">
+          <input type="number" id="numDays" class="form-control" />
+        </div>
+      </div>
+      <div class="form-group row mb-3">
+        <label for="endDate" class="col-sm-2 col-form-label">End Date:</label>
+        <div class="col-sm-10">
+          <input type="date" id="endDate" class="form-control" />
+        </div>
+      </div>
+      <button class="btn btn-primary w-100" onclick="generateCalendar()">
+        Generate Calendar
+      </button>
+      <table class="table table-bordered calendar mt-3">
+        <thead>
+          <tr>
+            <th>Sun</th>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+          </tr>
+        </thead>
+        <tbody id="calendar-body">
+          <!-- Calendar will be generated here by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      <div class="text-center">
+        <button class="btn btn-danger" onclick="setStatus('busy')">Busy</button>
+        <button class="btn btn-success" onclick="setStatus('available')">
+          Available
+        </button>
+        <button class="btn btn-primary" onclick="setStatus('out-of-office')">
+          Out of Office
+        </button>
+        <button class="btn btn-warning" onclick="setStatus('partly-available')">
+          Partly Available
+        </button>
+      </div>
+      <div class="text-center">
+        <button class="btn btn-info" onclick="saveCalendar()">
+          Save to Local Storage
+        </button>
+        <button class="btn btn-secondary" onclick="loadCalendar()">
+          Load from Local Storage
+        </button>
+        <button class="btn btn-info" onclick="downloadCalendar()">
+          Save to File
+        </button>
+        <button class="btn btn-secondary" onclick="uploadCalendar()">
+          Load from File
+        </button>
+        <input
+          type="file"
+          id="fileInput"
+          style="display: none"
+          onchange="handleFileUpload(event)"
+        />
+      </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      let currentStatus = "";
+
+      function setStatus(status) {
+        currentStatus = status;
+      }
+
+      function addMonthHeader(parent, date) {
+        const monthRow = document.createElement("tr");
+        const monthCell = document.createElement("td");
+        monthCell.colSpan = 7;
+        monthCell.className = "month-name";
+        monthCell.innerText = date.toLocaleString("default", { month: "long" });
+        monthRow.appendChild(monthCell);
+        parent.appendChild(monthRow);
+      }
+
+      function generateCalendar() {
+        const startDateInput = document.getElementById("startDate").value;
+        const numDays = parseInt(document.getElementById("numDays").value);
+        const endDateInput = document.getElementById("endDate").value;
+
+        if (!startDateInput) {
+          alert("Please provide a valid start date.");
+          return;
+        }
+
+        let TZendDate = null;
+        if (endDateInput) {
+          TZendDate = new Date(endDateInput);
+        } else if (!isNaN(numDays) && numDays > 0) {
+          TZendDate = new Date(startDateInput);
+          TZendDate.setDate(TZendDate.getDate() + numDays - 1);
+        } else {
+          alert("Please provide a valid number of days or end date.");
+          return;
+        }
+        const endDate = new Date(
+          TZendDate.getTime() + TZendDate.getTimezoneOffset() * 60000
+        );
+
+        const TZstartDate = new Date(startDateInput);
+        const startDate = new Date(
+          TZstartDate.getTime() + TZstartDate.getTimezoneOffset() * 60000
+        );
+        const calendarBody = document.getElementById("calendar-body");
+        calendarBody.innerHTML = "";
+
+        let currentMonth = startDate.getMonth();
+        let row = document.createElement("tr");
+        let cellIndex = startDate.getDay();
+
+        // Fill in first month header & row blank days
+        addMonthHeader(calendarBody, startDate);
+        for (let i = 0; i < cellIndex; i++) {
+          const cell = document.createElement("td");
+          row.appendChild(cell);
+        }
+
+        let dayCounter = 0;
+        while (startDate <= endDate) {
+          const cell = document.createElement("td");
+          cell.setAttribute("id", `day-${dayCounter}`);
+          cell.addEventListener("click", () => markDay(cell));
+          const cellText = document.createTextNode(startDate.getDate());
+          cell.appendChild(cellText);
+          row.appendChild(cell);
+
+          if (cellIndex === 6) {
+            calendarBody.appendChild(row);
+            row = document.createElement("tr");
+            cellIndex = 0;
+          } else {
+            cellIndex++;
+          }
+
+          startDate.setDate(startDate.getDate() + 1);
+          dayCounter++;
+
+          if (startDate.getMonth() !== currentMonth) {
+            currentMonth = startDate.getMonth();
+            addMonthHeader(calendarBody, startDate);
+          }
+        }
+
+        if (row.childNodes.length > 0) {
+          calendarBody.appendChild(row);
+        }
+      }
+
+      function markDay(cell) {
+        cell.className = "";
+        if (currentStatus) {
+          cell.classList.add(currentStatus);
+        }
+      }
+
+      function saveCalendar() {
+        const startDateInput = document.getElementById("startDate").value;
+        const numDays = parseInt(document.getElementById("numDays").value);
+        const endDateInput = document.getElementById("endDate").value;
+
+        const calendarData = {
+          startDate: startDateInput,
+          numDays: numDays,
+          endDate: endDateInput,
+          days: [],
+        };
+
+        document.querySelectorAll('td[id^="day-"]').forEach((cell) => {
+          calendarData.days.push({
+            id: cell.id,
+            status: cell.className,
+          });
+        });
+
+        localStorage.setItem("calendarData", JSON.stringify(calendarData));
+        alert("Calendar saved to local storage!");
+      }
+
+      function loadCalendar() {
+        const calendarData = JSON.parse(localStorage.getItem("calendarData"));
+        if (calendarData) {
+          document.getElementById("startDate").value = calendarData.startDate;
+          document.getElementById("numDays").value = calendarData.numDays;
+          document.getElementById("endDate").value = calendarData.endDate;
+          generateCalendar();
+
+          calendarData.days.forEach((data) => {
+            const cell = document.getElementById(data.id);
+            if (cell) {
+              cell.className = data.status;
+            }
+          });
+          alert("Calendar loaded from local storage!");
+        } else {
+          alert("No saved calendar data found.");
+        }
+      }
+
+      function downloadCalendar() {
+        const startDateInput = document.getElementById("startDate").value;
+        const numDays = parseInt(document.getElementById("numDays").value);
+        const endDateInput = document.getElementById("endDate").value;
+
+        const calendarData = {
+          startDate: startDateInput,
+          numDays: numDays,
+          endDate: endDateInput,
+          days: [],
+        };
+
+        document.querySelectorAll('td[id^="day-"]').forEach((cell) => {
+          calendarData.days.push({
+            id: cell.id,
+            status: cell.className,
+          });
+        });
+
+        const dataStr =
+          "data:text/json;charset=utf-8," +
+          encodeURIComponent(JSON.stringify(calendarData));
+        const downloadAnchorNode = document.createElement("a");
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "calendar_data.json");
+        document.body.appendChild(downloadAnchorNode); // Required for FF
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+      }
+
+      function uploadCalendar() {
+        document.getElementById("fileInput").click();
+      }
+
+      function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const calendarData = JSON.parse(e.target.result);
+            document.getElementById("startDate").value = calendarData.startDate;
+            document.getElementById("numDays").value = calendarData.numDays;
+            document.getElementById("endDate").value = calendarData.endDate;
+            generateCalendar();
+
+            calendarData.days.forEach((data) => {
+              const cell = document.getElementById(data.id);
+              if (cell) {
+                cell.className = data.status;
+              }
+            });
+            alert("Calendar loaded from file!");
+          };
+          reader.readAsText(file);
+        }
+      }
+    </script>
+    <script>
+        // https://webvees.com/post/how-use-toggle-dark-and-light-mode-in-bootstrap-53/
+      document
+        .getElementById("darkModeIcon")
+        .addEventListener("click", function () {
+          this.classList.toggle("bi-moon");
+          this.classList.toggle("bi-sun");
+          let theme = document.documentElement.getAttribute("data-bs-theme");
+          if (theme === "dark") {
+            document.documentElement.removeAttribute("data-bs-theme");
+          } else {
+            document.documentElement.setAttribute("data-bs-theme", "dark");
+          }
+        });
+
+      /*!
+       * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
+       * Copyright 2011-2024 The Bootstrap Authors
+       * Licensed under the Creative Commons Attribution 3.0 Unported License.
+       */
+
+      // (() => {
+      //   'use strict'
+
+      const getStoredTheme = () => localStorage.getItem("theme");
+      const setStoredTheme = (theme) => localStorage.setItem("theme", theme);
+
+      const getPreferredTheme = () => {
+        const storedTheme = getStoredTheme();
+        if (storedTheme) {
+          return storedTheme;
+        }
+
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+      };
+
+      const setTheme = (theme) => {
+        if (theme === "auto") {
+          document.documentElement.setAttribute(
+            "data-bs-theme",
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light"
+          );
+        } else {
+          document.documentElement.setAttribute("data-bs-theme", theme);
+        }
+      };
+
+      setTheme(getPreferredTheme());
+
+      const showActiveTheme = (theme, focus = false) => {
+        const themeSwitcher = document.querySelector("#bd-theme");
+
+        if (!themeSwitcher) {
+          return;
+        }
+
+        const themeSwitcherText = document.querySelector("#bd-theme-text");
+        const activeThemeIcon = document.querySelector(
+          ".theme-icon-active use"
+        );
+        const btnToActive = document.querySelector(
+          `[data-bs-theme-value="${theme}"]`
+        );
+        const svgOfActiveBtn = btnToActive
+          .querySelector("svg use")
+          .getAttribute("href");
+
+        document
+          .querySelectorAll("[data-bs-theme-value]")
+          .forEach((element) => {
+            element.classList.remove("active");
+            element.setAttribute("aria-pressed", "false");
+          });
+
+        btnToActive.classList.add("active");
+        btnToActive.setAttribute("aria-pressed", "true");
+        activeThemeIcon.setAttribute("href", svgOfActiveBtn);
+        const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`;
+        themeSwitcher.setAttribute("aria-label", themeSwitcherLabel);
+
+        if (focus) {
+          themeSwitcher.focus();
+        }
+      };
+
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", () => {
+          const storedTheme = getStoredTheme();
+          if (storedTheme !== "light" && storedTheme !== "dark") {
+            setTheme(getPreferredTheme());
+          }
+        });
+
+      window.addEventListener("DOMContentLoaded", () => {
+        showActiveTheme(getPreferredTheme());
+
+        document.querySelectorAll("[data-bs-theme-value]").forEach((toggle) => {
+          toggle.addEventListener("click", () => {
+            const theme = toggle.getAttribute("data-bs-theme-value");
+            setStoredTheme(theme);
+            setTheme(theme);
+            showActiveTheme(theme, true);
+          });
+        });
+      });
+      // })()
+    </script>
+  </body>
+</html>
