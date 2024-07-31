@@ -1,6 +1,8 @@
 # Availability Planner
 > Local website to decide availability over a given period, developed for personal use for planning when I can plan things for
 
+![Screenshot](screenshot.png)
+
 ## Features
 - Start Date Picker
 - Date Range or End Date Picker
@@ -10,8 +12,11 @@
 - Loads from Local Storage or File
 - Beautiful Bootstrap Design
 
-## ToDo
+![Example Walkthrough](example.gif)
+
+## To-Do
 > Though I should focus on other things so idk when/if I will get to it
 - Allow Availability Type Changes
 - Improve Visuals
 - Improve Exports
+- Favicon
