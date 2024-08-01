@@ -16,8 +16,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     />
-    <link rel="stylesheet"
-    href="style.css">
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body class="dark">
     <h1 class="text-center my-4">AVAILABILITY PLANNER</h1>
@@ -27,8 +26,14 @@
     </div>
 
     <!-- Split dropup button -->
-    <div class="btn-group dropup">
-      <button type="button" class="btn btn-secondary" onclick="shareParameters()">Share Setup</button>
+    <div class="btn-group dropup not-mobile">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        onclick="shareParameters()"
+      >
+        Share Setup
+      </button>
       <button
         type="button"
         class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
@@ -39,16 +44,59 @@
       </button>
       <ul class="dropdown-menu">
         <!-- Dropdown menu links -->
-        <button class="dropdown-item" href="#" onclick="shareParameters()">Share Setup</button>
-        <button class="dropdown-item" href="#" onclick="loadParameters()">Load Setup</button>
+        <button class="dropdown-item" href="#" onclick="shareParameters()">
+          Share Setup
+        </button>
+        <button class="dropdown-item" href="#" onclick="loadParameters()">
+          Load Setup
+        </button>
         <div class="dropdown-divider"></div>
-        <button class="dropdown-item" href="#" onclick="shareSetup()">Share Availability</button>
-        <button class="dropdown-item" href="#" onclick="loadSetup()">Load Availability</button>
+        <button class="dropdown-item" href="#" onclick="shareSetup()">
+          Share Availability
+        </button>
+        <button class="dropdown-item" href="#" onclick="loadSetup()">
+          Load Availability
+        </button>
       </ul>
     </div>
 
     <div class="container">
       <div class="form-group row mb-3">
+        <!-- Split dropup button -->
+        <div class="btn-group dropup mobile">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="shareParameters()"
+          >
+            Share Setup
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <span class="visually-hidden">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu">
+            <!-- Dropdown menu links -->
+            <button class="dropdown-item" href="#" onclick="shareParameters()">
+              Share Setup
+            </button>
+            <button class="dropdown-item" href="#" onclick="loadParameters()">
+              Load Setup
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" href="#" onclick="shareSetup()">
+              Share Availability
+            </button>
+            <button class="dropdown-item" href="#" onclick="loadSetup()">
+              Load Availability
+            </button>
+          </ul>
+        </div>
+
         <label for="startDate" class="col-sm-2 col-form-label"
           >Start Date:</label
         >
@@ -86,7 +134,7 @@
           </tr>
         </thead>
         <tbody id="calendar-body">
-          <!-- Calendar will be generated here by JavaScript -->
+          
         </tbody>
       </table>
 

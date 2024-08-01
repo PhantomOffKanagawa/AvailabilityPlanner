@@ -18,6 +18,7 @@ function setStatus(status, element) {
 
 // Add class to cell to mark it's value
 function markDay(cell) {
+  if (document.getElementById("calendar-body").classList.contains("comparing")) return;
   cell.className = "";
   if (currentStatus) {
     cell.classList.add(currentStatus);
@@ -174,8 +175,49 @@ function loadCalendar() {
 }
 
 // Show pop up for copying
+// Function to create a popup for copying text
 function copyToClipboard(text) {
-  window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
+  // Create the popup HTML
+  const popupHTML = `
+        <div class="modal fade" id="copyModal" tabindex="-1" aria-labelledby="copyModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="copyModalLabel">Copy Text</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="form-control" id="copyTextArea" rows="3">${text}</textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="copyButton">Copy</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+  // Append the popup to the body
+  document.body.insertAdjacentHTML("beforeend", popupHTML);
+
+  // Show the popup
+  const copyModal = new bootstrap.Modal(document.getElementById("copyModal"));
+  copyModal.show();
+
+  // Add event listener to the copy button
+  document.getElementById("copyButton").addEventListener("click", () => {
+    const copyText = document.getElementById("copyTextArea");
+    copyText.select();
+    document.execCommand("copy");
+  });
+
+  // Remove the popup from the DOM after it's closed
+  document
+    .getElementById("copyModal")
+    .addEventListener("hidden.bs.modal", () => {
+      document.getElementById("copyModal").remove();
+    });
 }
 
 // Provide pastable data to share parameters
@@ -194,13 +236,71 @@ function shareSetup() {
 }
 
 // Show pop up for pasting
+function createPastePopup() {
+  return new Promise((resolve) => {
+    // Create the popup HTML
+    const popupHTML = `
+            <div class="modal fade" id="pasteModal" tabindex="-1" aria-labelledby="pasteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="pasteModalLabel">Paste Text</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea class="form-control" id="pasteTextArea" rows="3"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="pasteButton">Paste</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+    // Append the popup to the body
+    document.body.insertAdjacentHTML("beforeend", popupHTML);
+
+    // Show the popup
+    const pasteModal = new bootstrap.Modal(
+      document.getElementById("pasteModal")
+    );
+    pasteModal.show();
+
+    // Add event listener to the paste button
+    document.getElementById("pasteButton").addEventListener("click", () => {
+      const pasteText = document.getElementById("pasteTextArea").value;
+      resolve(pasteText);
+      pasteModal.hide();
+    });
+
+    // Remove the popup from the DOM after it's closed
+    document
+      .getElementById("pasteModal")
+      .addEventListener("hidden.bs.modal", () => {
+        document.getElementById("pasteModal").remove();
+      });
+  });
+}
+
 function receiveClipboard() {
-  return window.prompt("Paste from clipboard: Ctrl+V, Enter");
+  return createPastePopup((pastedText) => {
+    console.log(pastedText);
+    console.log(atob(pastedText));
+    return pastedText;
+  });
 }
 
 // Provide pastable data to share parameters
 function loadParameters() {
-  const calendarData = JSON.parse(atob(receiveClipboard()));
+  createPastePopup().then((pastedText) => {
+    loadParametersCallback(pastedText);
+  });
+}
+
+function loadParametersCallback(pastedText) {
+  const calendarData = JSON.parse(atob(pastedText));
   //   calendarData["days"] = "";
   populateCalendar(calendarData);
 }
@@ -208,11 +308,28 @@ function loadParameters() {
 // Provide pastable data to share parameters
 let parameters = {};
 function loadSetup() {
+  createPastePopup().then((pastedText) => {
+    loadSetupCallback(pastedText);
+  });
+}
+
+function loadSetupCallback(pastedText) {
+    document.getElementsByClassName("footer")[0].classList.add("hide");
+
   const calendarBody = document.getElementById("calendar-body");
+  const currentCalFilled = (calendarBody.children.length != 0);
+  const pastedCalendarData = JSON.parse(atob(pastedText));
+
   if (!calendarBody.classList.contains("comparing")) {
     console.log("Recreating Original");
     calendarBody.classList.add("comparing");
-    const calendarData = getCalendarData();
+    var calendarData;
+    if (currentCalFilled) {
+      calendarData = getCalendarData();
+    } else {
+      calendarData = pastedCalendarData;
+    }
+
     parameters = {
       startDate: calendarData.startDate,
       numDays: calendarData.numDays,
@@ -244,27 +361,28 @@ function loadSetup() {
     });
   }
 
-  const calendarData = JSON.parse(atob(receiveClipboard()));
-  if (
-    calendarData.startDate != parameters.startDate ||
-    calendarData.numDays != parameters.numDays ||
-    calendarData.endDate != parameters.endDate
-  ) {
-    alert("Incompatible Parameters");
-    return;
-  }
+//   if (
+//     pastedCalendarData.startDate != parameters.startDate ||
+//     pastedCalendarData.numDays != parameters.numDays ||
+//     pastedCalendarData.endDate != parameters.endDate
+//   ) {
+//     alert("Incompatible Parameters");
+//     // return;
+//   }
 
-  const keys = calendarData.availabilities;
-  const days = calendarData.days.split(",");
-  days.forEach((data, index) => {
-    const cell = document.getElementById("day-" + index);
-    if (cell) {
-      const container = cell.children[1];
-      const color = document.createElement("div");
-      if (keys[data] != "") color.classList.add(keys[data]);
-      container.appendChild(color);
-    }
-  });
+  if (currentCalFilled) {
+    const keys = pastedCalendarData.availabilities;
+    const days = pastedCalendarData.days.split(",");
+    days.forEach((data, index) => {
+      const cell = document.getElementById("day-" + index);
+      if (cell) {
+        const container = cell.children[1];
+        const color = document.createElement("div");
+        if (keys[data] != "") color.classList.add(keys[data]);
+        container.appendChild(color);
+      }
+    });
+  }
 }
 
 function downloadCalendar() {
