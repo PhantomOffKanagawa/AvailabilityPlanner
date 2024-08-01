@@ -34,17 +34,19 @@
 }
 .dropup.not-mobile {
   position: fixed;
-  bottom: 1rem;
-  left: 1rem;
+  bottom: 10px;
+  left: 10px;
   z-index: 1;
 }
 
-.dropup.mobile {
-    /* position: fixed;
-    top: 1rem;
-    left: 1rem;
-    z-index: 1; */
+.dropdown.mobile {
+    position: fixed;
+    top: 1%;
+    left: 1%;
+    z-index: 1;
     display: none;
+    padding: 0;
+    margin: 0;
   }
 
 /* Fancy Fixings */
@@ -65,7 +67,7 @@ h1 {
   font-size: 2.5rem;
   height: 5rem;
   letter-spacing: -3px;
-  padding: 0 5vw 0 5vw;
+  padding: 6.5vh 5vw 5vh 5vw;
   font-family: "Gambetta", serif;
   transition: 1000ms ease;
   font-synthesis: none;
@@ -198,12 +200,16 @@ html {
     flex: 1;
 }
 
+label {
+    padding: 0 auto 0 auto;
+}
+
 /* Responsive Handling */
 
 @media (max-width: 768px) {
   .footer .btn {
-    width: 90%;
-    margin: 5px 0;
+    width: 95%;
+    margin: 2px 0;
   }
   .footer .btn-info,
   .footer .btn-secondary {
@@ -217,8 +223,8 @@ html {
   }
 
   .container {
-    margin: 3em auto 0 auto;
-    padding: 0 0 204px 0;
+    margin: 3em auto 0.25em auto;
+    padding: 0 0 184px 0;
     width: 90%;
   }
 
@@ -237,6 +243,10 @@ html {
 
   .mobile {
     display: block !important;
+  }
+
+  th, td {
+    font-size: small;
   }
 }
 

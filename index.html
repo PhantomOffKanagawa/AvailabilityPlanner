@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body class="dark">
-    <h1 class="text-center my-4">AVAILABILITY PLANNER</h1>
+    <h1 class="text-center">AVAILABILITY PLANNER</h1>
 
     <div class="dark-mode-toggle">
       <i id="darkModeIcon" class="fa fa-moon"></i>
@@ -29,74 +29,62 @@
     <div class="btn-group dropup not-mobile">
       <button
         type="button"
-        class="btn btn-secondary"
-        onclick="shareParameters()"
-      >
-        Share Setup
-      </button>
-      <button
-        type="button"
-        class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+        class="btn btn-secondary dropdown-toggle"
         data-bs-toggle="dropdown"
         aria-expanded="false"
       >
+      <i class="fa fa-share-nodes"></i> Share
         <span class="visually-hidden">Toggle Dropdown</span>
       </button>
       <ul class="dropdown-menu">
         <!-- Dropdown menu links -->
         <button class="dropdown-item" href="#" onclick="shareParameters()">
-          Share Setup
+          Share Date Range
         </button>
         <button class="dropdown-item" href="#" onclick="loadParameters()">
-          Load Setup
+          Load Date Range
         </button>
         <div class="dropdown-divider"></div>
         <button class="dropdown-item" href="#" onclick="shareSetup()">
           Share Availability
         </button>
         <button class="dropdown-item" href="#" onclick="loadSetup()">
-          Load Availability
+          Overlay Availability
+        </button>
+      </ul>
+    </div>
+
+    <!-- Split dropup button -->
+    <div class="dropdown mobile">
+      <button
+        type="button"
+        class="btn btn-link"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <i class="fa fa-share-nodes"></i>
+        <span class="visually-hidden">Toggle Dropdown</span>
+      </button>
+      <ul class="dropdown-menu">
+        <!-- Dropdown menu links -->
+        <button class="dropdown-item" href="#" onclick="shareParameters()">
+          Share Date Range
+        </button>
+        <button class="dropdown-item" href="#" onclick="loadParameters()">
+          Load Date Range
+        </button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item" href="#" onclick="shareSetup()">
+          Share Availability
+        </button>
+        <button class="dropdown-item" href="#" onclick="loadSetup()">
+          Overlay Availability
         </button>
       </ul>
     </div>
 
     <div class="container">
-      <div class="form-group row mb-3">
-        <!-- Split dropup button -->
-        <div class="btn-group dropup mobile">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            onclick="shareParameters()"
-          >
-            Share Setup
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <span class="visually-hidden">Toggle Dropdown</span>
-          </button>
-          <ul class="dropdown-menu">
-            <!-- Dropdown menu links -->
-            <button class="dropdown-item" href="#" onclick="shareParameters()">
-              Share Setup
-            </button>
-            <button class="dropdown-item" href="#" onclick="loadParameters()">
-              Load Setup
-            </button>
-            <div class="dropdown-divider"></div>
-            <button class="dropdown-item" href="#" onclick="shareSetup()">
-              Share Availability
-            </button>
-            <button class="dropdown-item" href="#" onclick="loadSetup()">
-              Load Availability
-            </button>
-          </ul>
-        </div>
-
+      <div class="form-group row mb-1">
         <label for="startDate" class="col-sm-2 col-form-label"
           >Start Date:</label
         >
@@ -104,7 +92,7 @@
           <input type="date" id="startDate" class="form-control" />
         </div>
       </div>
-      <div class="form-group row mb-3">
+      <div hidden class="form-group row mb-1">
         <label for="numDays" class="col-sm-2 col-form-label"
           >Number of Days:</label
         >
@@ -118,7 +106,7 @@
           <input type="date" id="endDate" class="form-control" />
         </div>
       </div>
-      <button class="btn btn-primary w-100" onclick="generateCalendar()">
+      <button class="btn btn-primary w-100 mt-1" onclick="generateCalendar()">
         Generate Calendar
       </button>
       <table class="table table-bordered calendar mt-3">
@@ -133,25 +121,23 @@
             <th>Sat</th>
           </tr>
         </thead>
-        <tbody id="calendar-body">
-          
-        </tbody>
+        <tbody id="calendar-body"></tbody>
       </table>
 
       <div class="spacer"></div>
 
       <div class="text-center file-buttons">
         <button class="btn btn-info" onclick="saveCalendar()">
-          <i class="fa fa-save"></i> Save to Browser
+          <i class="fa fa-cloud-arrow-up"></i> Save to Browser
         </button>
         <button class="btn btn-secondary" onclick="loadCalendar()">
-          <i class="fa-solid fa-folder-open"></i> Load from Browser
+          <i class="fa-solid fa-cloud-arrow-down"></i> Load from Browser
         </button>
         <button class="btn btn-info" onclick="downloadCalendar()">
-          <i class="fa fa-file-export"></i> Save to File
+          <i class="fa fa-floppy-disk"></i> Save to File
         </button>
         <button class="btn btn-secondary" onclick="uploadCalendar()">
-          <i class="fa fa-file-import"></i> Load File
+          <i class="fa-regular fa-folder-open"></i> Load File
         </button>
         <input
           type="file"

@@ -99,10 +99,16 @@ function generateCalendar() {
     startDate.setDate(startDate.getDate() + 1);
     dayCounter++;
 
-    if (startDate.getMonth() !== currentMonth) {
+    if (startDate.getMonth() !== currentMonth && startDate <= endDate) {
       currentMonth = startDate.getMonth();
       addMonthHeader(calendarBody, startDate);
     }
+  }
+
+  while(cellIndex != 0 && cellIndex < 7) {
+    const cell = document.createElement("td");
+    row.appendChild(cell);
+    cellIndex++;
   }
 
   if (row.childNodes.length > 0) {
@@ -301,6 +307,7 @@ function loadParameters() {
 
 function loadParametersCallback(pastedText) {
   const calendarData = JSON.parse(atob(pastedText));
+  calendarData.days = "";
   //   calendarData["days"] = "";
   populateCalendar(calendarData);
 }
