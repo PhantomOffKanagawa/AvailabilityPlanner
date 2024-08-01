@@ -1,4 +1,35 @@
 // Helper Functions
+function showToast(title, body) {
+    // Generate a unique ID for each toast
+    const toastId = 'toast' + Date.now();
+
+    // Create the toast HTML
+    const toastHTML = `
+        <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">${title}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${body}
+            </div>
+        </div>
+    `;
+
+    // Append the toast to the container
+    document.getElementById('toast-container').insertAdjacentHTML('beforeend', toastHTML);
+
+    // Initialize and show the toast
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 5000 });
+    toast.show();
+
+    // Remove the toast from the DOM after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+
 let currentStatus = "";
 
 // Set the current status and button
@@ -43,7 +74,7 @@ function generateCalendar() {
   const endDateInput = document.getElementById("endDate").value;
 
   if (!startDateInput) {
-    alert("Please provide a valid start date.");
+    showToast('Start Date', 'Please provide a valid start date.');
     return;
   }
 
@@ -54,7 +85,7 @@ function generateCalendar() {
     TZendDate = new Date(startDateInput);
     TZendDate.setDate(TZendDate.getDate() + numDays - 1);
   } else {
-    alert("Please provide a valid number of days or end date.");
+showToast('Input Error', "Please provide a valid end date.");
     return;
   }
   const endDate = new Date(
@@ -166,7 +197,7 @@ function populateCalendar(calendarData) {
 function saveCalendar() {
   const calendarData = getCalendarData();
   localStorage.setItem("calendarData", JSON.stringify(calendarData));
-  alert("Calendar saved to local storage!");
+  showToast("Saved", "Calendar saved to local storage!");
 }
 
 // Load calendar from local storage
@@ -174,9 +205,9 @@ function loadCalendar() {
   const calendarData = JSON.parse(localStorage.getItem("calendarData"));
   if (calendarData) {
     populateCalendar(calendarData);
-    // alert("Calendar loaded from local storage!");
+    showToast("Loaded", "Calendar loaded from local storage!");
   } else {
-    // alert("No saved calendar data found.");
+    showToast("Error Loading", "No saved calendar data found.");
   }
 }
 
@@ -368,14 +399,14 @@ function loadSetupCallback(pastedText) {
     });
   }
 
-//   if (
-//     pastedCalendarData.startDate != parameters.startDate ||
-//     pastedCalendarData.numDays != parameters.numDays ||
-//     pastedCalendarData.endDate != parameters.endDate
-//   ) {
-//     alert("Incompatible Parameters");
-//     // return;
-//   }
+  if (
+    pastedCalendarData.startDate != parameters.startDate ||
+    pastedCalendarData.numDays != parameters.numDays ||
+    pastedCalendarData.endDate != parameters.endDate
+  ) {
+    showToast("Warning", "Incompatible Parameters!");
+    // return;
+  }
 
   if (currentCalFilled) {
     const keys = pastedCalendarData.availabilities;
@@ -417,7 +448,7 @@ function handleFileUpload(event) {
     reader.onload = function (e) {
       const calendarData = JSON.parse(e.target.result);
       populateCalendar(calendarData);
-      alert("Calendar loaded from file!");
+      showToast("Loaded", "Calendar loaded from file!");
     };
     reader.readAsText(file);
   }
