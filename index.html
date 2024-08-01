@@ -26,6 +26,27 @@
       <i id="darkModeIcon" class="fa fa-moon"></i>
     </div>
 
+    <!-- Split dropup button -->
+    <div class="btn-group dropup">
+      <button type="button" class="btn btn-secondary" onclick="shareParameters()">Share Setup</button>
+      <button
+        type="button"
+        class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <span class="visually-hidden">Toggle Dropdown</span>
+      </button>
+      <ul class="dropdown-menu">
+        <!-- Dropdown menu links -->
+        <button class="dropdown-item" href="#" onclick="shareParameters()">Share Setup</button>
+        <button class="dropdown-item" href="#" onclick="loadParameters()">Load Setup</button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item" href="#" onclick="shareSetup()">Share Availability</button>
+        <button class="dropdown-item" href="#" onclick="loadSetup()">Load Availability</button>
+      </ul>
+    </div>
+
     <div class="container">
       <div class="form-group row mb-3">
         <label for="startDate" class="col-sm-2 col-form-label"

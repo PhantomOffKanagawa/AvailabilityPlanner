@@ -147,6 +147,44 @@ html {
 .btn-warning {
   --selected-color: rgb(244, 255, 144);
 }
+
+.comparing {
+    /* background-color: #c0c0c044; */
+}
+
+.comparing td {
+}
+
+/* Comparing Mode */
+.comparing td {
+    position: relative;
+    padding: 0;
+    height: 45px;
+}
+
+.comparing div.text {
+    color: black;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    /* flex-direction: column; */
+    align-items: center;
+}
+
+.comparing .bgContainer {
+    display: flex;
+    height: 45px;
+}
+
+.comparing .bgContainer div {
+    background-color: #a5a5a59a;
+    flex: 1;
+}
+
 /* Responsive Handling */
 
 @media (max-width: 768px) {

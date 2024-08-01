@@ -12,6 +12,7 @@
 - Loads from Local Storage or File
 - Mobile Support
 - Beautiful Bootstrap Design
+- Check Availability Against Others
 
 ![Example Walkthrough](example.gif)
 
